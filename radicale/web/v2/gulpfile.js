@@ -1,12 +1,13 @@
 const autoprefixer = require('gulp-autoprefixer');
 const browserSync = require('browser-sync').create();
+const data = require('gulp-data');
 const gulp = require('gulp')
 const nunjucks = require('gulp-nunjucks-html');
 const rename = require('gulp-rename');
 const sass = require('gulp-sass');
 const uuid = require('uuid');
 
-const buildHash = uuid();
+const buildHash = uuid.v4();
 
 sass.compiler = require('node-sass');
 
@@ -29,7 +30,7 @@ function template(callback) {
  * Compile scss files, autoprefix and create source maps
  */
 function scss(callback) {
-	gulp.src('src/styles/**/*.scss', { sourcemaps: true })
+	gulp.src(['src/styles/**/*.scss', 'src/components/**/*.scss'], { sourcemaps: true })
         .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
         .pipe(autoprefixer({ cascade: false }))
 		.pipe(rename({ extname: '.min.css' }))
@@ -40,16 +41,25 @@ function scss(callback) {
 }
 
 /**
- * Copy assets to build forlder
+ * Copy assets to build folder. This version copy the minified versions of the
+ * vendor scripts.
  */
 function copy(callback) {
-    // copy fonts
-    gulp.src(['src/assets/fonts/**/*', '!src/assets/fonts/fontawesome/**/*'])
-        .pipe(gulp.dest('build/assets/fonts'));
+    gulp.src('src/assets/vendor/**/*.min.js')
+        .pipe(gulp.dest('build/assets/vendor'));
 
-    // FontAwesome
-    gulp.src('src/assets/fonts/fontawesome/**/*')
-        .pipe(gulp.dest('build/assets/fonts/fontawesome'));
+    callback();
+}
+
+/**
+ * Copy assets to build folder. This version copy the development versions of the
+ * vendor scripts.
+ */
+function copyDev(callback) {
+    gulp.src(['src/assets/vendor/**/*.js', '!src/assets/vendor/**/*.min.js'])
+        // Rename to make import easier
+        .pipe(rename({ extname: '.min.js' }))
+        .pipe(gulp.dest('build/assets/vendor'));
 
     callback();
 }
@@ -64,7 +74,7 @@ function watch(callback) {
         },
         open: false,
         ui: false
-	});
+    });
 
     callback();
 }
@@ -86,13 +96,14 @@ function build(callback) {
  */
 function dev(callback) {
     gulp.watch("src/*.html", template);
-    gulp.watch("src/templates/**/*.html", template);
-	gulp.watch('src/styles/**/*.scss', scss);
-    gulp.watch(['src/assets/**/*'], copy);
-	gulp.watch('build/**/*.js', browserSync.reload);
+    gulp.watch("src/pages/**/*.html", template);
+    gulp.watch('src/styles/**/*.scss', scss);
+	gulp.watch('src/components/**/*.scss', scss);
+    gulp.watch('src/assets/**/*', copyDev);
+	gulp.watch('build/**/*', browserSync.reload);
 
     callback();
 }
 
 exports.build = build;
-exports.default = gulp.series(watch, scss, template, copy, dev);
+exports.default = gulp.series(watch, scss, template, copyDev, dev);
