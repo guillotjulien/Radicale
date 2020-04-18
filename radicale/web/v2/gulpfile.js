@@ -1,5 +1,6 @@
 const autoprefixer = require('gulp-autoprefixer');
 const browserSync = require('browser-sync').create();
+const concat = require('gulp-concat');
 const data = require('gulp-data');
 const gulp = require('gulp')
 const nunjucks = require('gulp-nunjucks-html');
@@ -33,7 +34,7 @@ function scss(callback) {
 	gulp.src(['src/styles/**/*.scss', 'src/components/**/*.scss'], { sourcemaps: true })
         .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
         .pipe(autoprefixer({ cascade: false }))
-		.pipe(rename({ extname: '.min.css' }))
+        .pipe(concat('main.min.css'))
 		.pipe(gulp.dest('build', { sourcemaps: true }))
         .pipe(browserSync.reload({ stream: true }));
 
@@ -45,8 +46,20 @@ function scss(callback) {
  * vendor scripts.
  */
 function copy(callback) {
-    gulp.src('src/assets/vendor/**/*.min.js')
-        .pipe(gulp.dest('build/assets/vendor'));
+    gulp.src([
+        'src/assets/*.svg',
+        'src/assets/*.jpeg',
+        'src/assets/*.png',
+        'src/assets/*.jpg',
+    ]).pipe(gulp.dest('build/assets'));
+
+    gulp.src([
+        'node_modules/@clr/ui/clr-ui.min.css',
+        'node_modules/@clr/icons/clr-icons.min.css',
+        'node_modules/@webcomponents/custom-elements/custom-elements.min.js',
+        'node_modules/@clr/icons/clr-icons.min.js',
+        'src/assets/vendor/**/*.min.js',
+    ]).pipe(gulp.dest('build/assets/vendor'));
 
     callback();
 }
@@ -56,10 +69,28 @@ function copy(callback) {
  * vendor scripts.
  */
 function copyDev(callback) {
-    gulp.src(['src/assets/vendor/**/*.js', '!src/assets/vendor/**/*.min.js'])
-        // Rename to make import easier
-        .pipe(rename({ extname: '.min.js' }))
-        .pipe(gulp.dest('build/assets/vendor'));
+    gulp.src([
+        'src/assets/*.svg',
+        'src/assets/*.jpeg',
+        'src/assets/*.png',
+        'src/assets/*.jpg',
+    ]).pipe(gulp.dest('build/assets'));
+
+    gulp.src([
+        'node_modules/@clr/ui/clr-ui.min.css',
+        'node_modules/@clr/icons/clr-icons.min.css',
+        'node_modules/@webcomponents/custom-elements/custom-elements.min.js',
+        'node_modules/@clr/icons/clr-icons.min.js',
+    ])
+    .pipe(gulp.dest('build/assets/vendor'));
+
+    gulp.src([
+        'src/assets/vendor/**/*.js',
+        '!src/assets/vendor/**/*.min.js',
+    ])
+    // Rename to make import easier
+    .pipe(rename({ extname: '.min.js' }))
+    .pipe(gulp.dest('build/assets/vendor'));
 
     callback();
 }
@@ -123,8 +154,7 @@ function i18n(callback) {
  * Watch files for hot reload
  */
 function dev(callback) {
-    gulp.watch("src/*.html", template);
-    gulp.watch("src/pages/**/*.html", template);
+    gulp.watch("src/**/*.html", template);
     gulp.watch('src/styles/**/*.scss', scss);
 	gulp.watch('src/components/**/*.scss', scss);
     gulp.watch('src/assets/**/*', copyDev);
