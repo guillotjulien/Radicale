@@ -1,0 +1,21 @@
+{
+    "name": "radicale-web-v2",
+    "version": "1.0.0",
+    "description": "A modern yet simple to use web interface for Radicale CalDAV server",
+    "scripts": {
+        "dev": "gulp",
+        "build": "gulp build"
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "browser-sync": "^2.26.7",
+        "gulp": "^4.0.2",
+        "gulp-autoprefixer": "^7.0.1",
+        "gulp-nunjucks-html": "^2.0.0",
+        "gulp-rename": "^2.0.0",
+        "gulp-sass": "^4.0.2",
+        "node-sass": "^4.13.1",
+        "uuid": "^7.0.3"
+    }
+}
