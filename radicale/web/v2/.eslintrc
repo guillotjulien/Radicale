@@ -1,0 +1,32 @@
+{
+    "env": {
+        "browser": true,
+        "es6": true
+    },
+    "extends": [
+        "google",
+        "prettier"
+    ],
+    "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly"
+    },
+    "parserOptions": {
+        "ecmaVersion": 2018,
+        "sourceType": "module"
+    },
+    "plugins": [],
+    "rules": {
+        // Overrides
+        "require-jsdoc": 0,
+        "valid-jsdoc": 0,
+        // Custom rules
+        "eqeqeq": [
+            "error",
+            "always"
+        ],
+        "curly": [
+            "error"
+        ]
+    }
+}
