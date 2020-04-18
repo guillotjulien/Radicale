@@ -15,10 +15,10 @@ sass.compiler = require('node-sass');
  * Build html from nunjucks template files and inject build hash for assets cache busting
  */
 function template(callback) {
-	gulp.src(['src/*.html'])
+	gulp.src(['src/pages/*.html'])
 		.pipe(data(() => ({ buildHash: buildHash })))
         .pipe(nunjucks({
-			searchPaths: ['src/components', 'src/pages']
+			searchPaths: ['src']
         }))
         .pipe(gulp.dest('build'))
         .pipe(browserSync.stream());
@@ -90,6 +90,34 @@ function build(callback) {
 }
 
 /**
+ * Extract every string that are marked as i18n and generate a single .pot file
+ */
+function i18n(callback) {
+    // TODO: Extract string in tags that have a 'i18n' attribute
+    // TODO: Extract string in attributes whose name starts with 'i18n-*'
+    //
+    // https://gist.github.com/bosskovic/5930785
+    //
+    // Example: <h1 i18n>I'm a translatable string!</h1>
+    // Example: <h1 i18n="A little bit more context">I'm a translatable string!</h1>
+    // Example: <button i18n i18n-aria-label aria-label="I'm a translatable aria-label!">I'm a translatable string!</>
+    // Example: <button i18n i18n-aria-label="A little bit more context" aria-label="I'm a translatable aria-label!">
+    //              I'm a translatable string!
+    //          </button>
+    //
+    // Result: msgid "I'm a translatable string!"
+    //         msgstr "Je suis une chaine de caractères traduisible!"
+    //
+    // Result: msgctxt "A little bit more context"
+    //         msgid "I'm a translatable string!"
+    //         msgstr "Je suis une chaine de caractères traduisible!"
+
+    console.log('TODO: Implements i18n extraction');
+
+    callback();
+}
+
+/**
  * Definition of dev task, handle templating, building scss and copying assets
  *
  * Watch files for hot reload
@@ -106,4 +134,5 @@ function dev(callback) {
 }
 
 exports.build = build;
+exports.i18n = i18n;
 exports.default = gulp.series(watch, scss, template, copyDev, dev);

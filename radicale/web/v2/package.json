@@ -4,6 +4,7 @@
     "description": "A modern yet simple to use web interface for Radicale CalDAV server",
     "scripts": {
         "dev": "gulp",
+        "i18n": "gulp i18n",
         "build": "gulp build"
     },
     "author": "",
