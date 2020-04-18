@@ -8,14 +8,24 @@
 
     <title>{{ title }}</title>
 
-    <link rel="stylesheet" href="./main.min.css?h={{ buildHash }}">
+    <link rel="stylesheet" href="assets/vendor/clr-ui.min.css">
+    <link rel="stylesheet" href="assets/vendor/clr-icons.min.css">
+    <link rel="stylesheet" href="main.min.css?h={{ buildHash }}">
 </head>
 
-<body class="{{ class }}">
-    <main>
-        {% block content %}{% endblock %}
+<body class="main-container {{ class }}">
+
+    {% include "./components/global/header/header.component.html" %}
+
+    <main class="content-container">
+        <div class="content-area">
+            {% block content %}{% endblock %}
+        </div>
     </main>
 </body>
 
-<script src="./main.min.js?h={{ buildHash }}"></script>
+<script src="assets/vendor/custom-elements.min.js"></script>
+<script src="assets/vendor/clr-icons.min.js"></script>
+<script src="assets/vendor/vue.min.js"></script>
+<script src="main.min.js?h={{ buildHash }}"></script>
 </html>
